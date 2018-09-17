@@ -1,6 +1,7 @@
 package io.training.week5.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -43,17 +44,16 @@ import javax.persistence.Transient;
 public class Orders {
   @Id
   @GeneratedValue
-  @JsonIgnore
+//  @JsonIgnore
   private long id;
-  @JoinColumn(name="accountId")
-  @JsonIgnore
+//  @JoinColumn(name="accountId")
   private long accountId;
   private long orderNumber;
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonSerialize(using = LocalDateTimeSerializer.class)
   private LocalDateTime orderDate;
-  @JoinColumn(name="addressId")
-  @JsonIgnore
+//  @JoinColumn(name="addressId")
+//  @JsonIgnore
   private long addressId;
   @OneToMany(fetch= FetchType.LAZY, cascade = CascadeType.ALL)
   private List<OrderLineItems> orderLineItemsList;
@@ -74,13 +74,12 @@ public class Orders {
 //    this.totalPrice = totalPrice;
 //  }
 //
-//  public Orders(LocalDateTime orderDate, long orderNumber, long accountId, long addressId) {
-//    this.orderDate = orderDate;
-//    this.orderNumber = orderNumber;
-//    this.accountId = accountId;
-//    this.addressId = addressId;
-//  }
-
+  public Orders(LocalDateTime orderDate, long orderNumber, long accountId, long addressId) {
+    this.orderDate = orderDate;
+    this.orderNumber = orderNumber;
+    this.accountId = accountId;
+    this.addressId = addressId;
+  }
 
   public Orders() {}
 
@@ -92,10 +91,12 @@ public class Orders {
     this.id = id;
   }
 
+  @JsonIgnore
   public long getAccountId() {
     return accountId;
   }
 
+  @JsonProperty
   public void setAccountId(long accountId) {
     this.accountId = accountId;
   }
@@ -110,14 +111,16 @@ public class Orders {
 
   public LocalDateTime getOrderDate() { return orderDate; }
 
-  public void setOrderDate(String orderDate) {
-    this.orderDate = LocalDateTime.parse(orderDate);
+  public void setOrderDate(LocalDateTime orderDate) {
+    this.orderDate = orderDate;
   }
 
+  @JsonIgnore
   public long getAddressId() {
     return addressId;
   }
 
+  @JsonProperty
   public void setAddressId(long addressId) { this.addressId = addressId; }
 
   public List<OrderLineItems> getOrderLineItemsList() {
@@ -150,9 +153,6 @@ public class Orders {
     }
   }
 
-  public void setOrderDate(LocalDateTime orderDate) {
-    this.orderDate = orderDate;
-  }
 
 //  public Account getAccount() {
 //    return account;

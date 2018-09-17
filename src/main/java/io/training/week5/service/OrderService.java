@@ -1,12 +1,13 @@
 package io.training.week5.service;
 
-import com.netflix.discovery.converters.Auto;
 import io.training.week5.model.Account;
 import io.training.week5.model.Address;
 import io.training.week5.entity.OrderLineItems;
 import io.training.week5.entity.Orders;
-import io.training.week5.model.Shipment;
+import io.training.week5.model.OrderNumber;
 import io.training.week5.repo.OrdersRepository;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,18 @@ public class OrderService {
     return ordersList;
   }
 
-  public long retrieveOrderNumber(long accountId) { return ordersRepository.retrieveOrderNumber(accountId);}
+  public List<OrderNumber> retrieveOrderNumber(long accountId) {
+    List<BigInteger> longList = ordersRepository.retrieveOrderNumber(accountId);
+    List<OrderNumber> orderNumberList = new ArrayList<>();
+    for(BigInteger orderNum : longList) {
+      orderNumberList.add(new OrderNumber(orderNum));
+    }
+    return orderNumberList;
+  }
+
+  public void addOrder(Orders order) {
+    ordersRepository.save(order);
+  }
 
   private Address retrieveAddress(long accountId, long addressId) { return addressService.retrieveAddress(accountId, addressId); }
   private Account retrieveAccount(long accountId) { return accountService.retrieveAccount(accountId); }

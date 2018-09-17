@@ -32,4 +32,9 @@ public class OrderLineItemService {
     return orderLineItemsRepository.retrieveOrderLineDisplay(orderId);
   }
 
+  public void addOrderLineItem(long orderId, OrderLineItems orderLineItems) {
+    orderLineItems.setOrdersId(orderId);
+    orderLineItemsRepository.save(orderLineItems);
+  }
+
 }

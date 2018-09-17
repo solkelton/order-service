@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @FeignClient(name="shipment-service")
 public interface ShipmentService {
 
-  @RequestMapping(method= RequestMethod.GET, value="shipments/{id}")
+  @RequestMapping(method= RequestMethod.GET, value="/{id}")
   public Shipment retrieveShipment(@PathVariable("id") long id);
 
-  @RequestMapping(method= RequestMethod.GET, value="shipments/{id}/dates")
+  @RequestMapping(method= RequestMethod.GET, value="/{id}/dates")
   public ShipmentDisplay retrieveShipmentDates(@PathVariable("id") long id);
 
 

@@ -1,6 +1,7 @@
 package io.training.week5.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.training.week5.model.OrderLineDisplay;
 import io.training.week5.model.Product;
 import io.training.week5.model.Shipment;
@@ -37,21 +38,24 @@ import javax.persistence.Transient;
 public class OrderLineItems {
   @Id
   @GeneratedValue
-  @JsonIgnore
+//  @JsonIgnore
   private long id;
-  @JoinColumn(name="productId")
-  @JsonIgnore
+//  @JoinColumn(name="productId")
+//  @JsonIgnore
   private long productId;
   private int quantity;
   private double price;
   @Transient
   private double totalPrice;
-  @JoinColumn(name="shipmentId")
-  @JsonIgnore
+//  @JoinColumn(name="shipmentId")
+//  @JsonIgnore
   private long shipmentId;
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name="ordersId")
+  private long ordersId;
+
   @JsonIgnore
+  @Transient
   private Orders orders;
 
   @Transient
@@ -60,23 +64,21 @@ public class OrderLineItems {
   @Transient
   private ShipmentDisplay shipment;
 
-
-  public OrderLineItems(long productId, int quantity, double price,
-      long shipmentId) {
+  public OrderLineItems(long productId, int quantity, double price, long shipmentId) {
     this.productId = productId;
     this.quantity = quantity;
     this.price = price;
     this.totalPrice = 0;
     this.shipmentId = shipmentId;
-    this.orders = null;
   }
-
-  public OrderLineItems(double price, long productId, int quantity, long shipmentId) {
-    this.price = price;
-    this.productId = productId;
-    this.quantity = quantity;
-    this.shipmentId = shipmentId;
-  }
+//
+//  public OrderLineItems(double price, long productId, int quantity, long shipmentId) {
+//    System.out.println("OrderLineItems constructor called");
+//    this.price = price;
+//    this.productId = productId;
+//    this.quantity = quantity;
+//    this.shipmentId = shipmentId;
+//  }
 
   public OrderLineItems() {}
 
@@ -88,10 +90,12 @@ public class OrderLineItems {
     this.id = id;
   }
 
+  @JsonIgnore
   public long getProductId() {
     return productId;
   }
 
+  @JsonProperty
   public void setProductId(long productId) {
     this.productId = productId;
   }
@@ -120,10 +124,12 @@ public class OrderLineItems {
     this.totalPrice = totalPrice;
   }
 
+  @JsonIgnore
   public long getShipmentId() {
     return shipmentId;
   }
 
+  @JsonProperty
   public void setShipmentId(long shipmentId) {
     this.shipmentId = shipmentId;
   }
@@ -154,5 +160,15 @@ public class OrderLineItems {
 
   public void calculateTotalPrice() {
     totalPrice = price * quantity;
+  }
+
+  @JsonIgnore
+  public long getOrdersId() {
+    return ordersId;
+  }
+
+  @JsonProperty
+  public void setOrdersId(long ordersId) {
+    this.ordersId = ordersId;
   }
 }

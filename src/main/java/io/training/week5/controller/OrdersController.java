@@ -7,9 +7,12 @@ import io.training.week5.model.OrderNumber;
 import io.training.week5.service.OrderLineItemService;
 import io.training.week5.service.OrderService;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,11 +36,6 @@ public class OrdersController {
     return orderService.retrieveOrder(orderId);
   }
 
-  @PostMapping
-  public void addOrder(@RequestBody Orders order) {
-    orderService.addOrder(order);
-  }
-
   @GetMapping("{orderId}/lines")
   public List<OrderLineItems> retrieveLines(@PathVariable("orderId") long orderId) {
     return orderLineItemService.retrieveOrderLineItems(orderId);
@@ -59,8 +57,42 @@ public class OrdersController {
   }
 
   @PostMapping("{orderId}/lines")
-  public void addLineToOrder(@PathVariable("orderId") long orderId, @RequestBody OrderLineItems newOrderLineItems) {
-    orderLineItemService.addOrderLineItem(orderId, newOrderLineItems);
+  public OrderLineItems addLineToOrder(@PathVariable("orderId") long orderId, @RequestBody OrderLineItems newOrderLineItems) {
+    return orderLineItemService.addOrderLineItem(orderId, newOrderLineItems);
+  }
+
+  @PostMapping
+  public Orders addOrder(@RequestBody Orders order) {
+    return orderService.addOrder(order);
+  }
+
+  @PutMapping("/{orderId}")
+  public Orders updateOrder(@PathVariable("orderId") long orderId, @RequestBody Orders order) {
+    return orderService.updateOrder(orderId, order);
+  }
+
+  @PutMapping("/{orderId}/lines/{orderLineId}")
+  public OrderLineItems updateOrderLineItems(@PathVariable("orderId") long orderId, @PathVariable("orderLineId") long orderLineId,
+      @RequestBody OrderLineItems orderLineItems) {
+    return orderLineItemService.updateOrderLineItems(orderId, orderLineId, orderLineItems);
+  }
+
+  @Transactional
+  @DeleteMapping("/{orderId}")
+  public boolean removeOrder(@PathVariable("orderId") long orderId) {
+    return orderService.removeOrder(orderId);
+  }
+
+  @Transactional
+  @DeleteMapping("/{orderId}/lines/{orderLineId}")
+  public boolean removeAnOrderLineItem(@PathVariable("orderId") long orderId, @PathVariable("orderLineId") long orderLineId) {
+    return orderLineItemService.removeAnOrderLineItem(orderId, orderLineId);
+  }
+
+  @Transactional
+  @DeleteMapping("/{orderId}/lines")
+  public boolean removeOrderLineItems(@PathVariable("orderId") long orderId) {
+    return orderLineItemService.removeOrderLineItems(orderId);
   }
 
 }

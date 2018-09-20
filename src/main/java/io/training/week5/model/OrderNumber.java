@@ -10,7 +10,7 @@ public class OrderNumber {
     this.orderNumber = orderNumber;
   }
 
-  public OrderNumber() {}
+  public OrderNumber(int i) {}
 
   public BigInteger getOrderNumber() {
     return orderNumber;

@@ -6,18 +6,22 @@ import java.math.BigInteger;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrdersRepository extends JpaRepository<Orders, Long> {
 
+  @Nullable
   List<Orders> getOrdersByAccountIdOrderByOrderDate(long accountId);
 
   @Query(value = "select order_number as orderNumber from Orders where account_id=?1", nativeQuery = true)
   List<BigInteger> retrieveOrderNumber(long accountId);
 
+  @Nullable
+  Orders getOrdersById(long id);
 
-
+  void deleteOrdersById(long id);
 
 //  @Query(nativeQuery=true, name="retrieveAccountOrders")
 //  List<Orders> retrieveAccountOrders(long accountId);

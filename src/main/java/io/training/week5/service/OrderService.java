@@ -27,15 +27,15 @@ public class OrderService {
   }
 
   public Orders retrieveOrder(long id) {
-    Orders order = new Orders();
-    Optional<Orders> query = ordersRepository.findById(id);
-    if(query.isPresent()) {
-      order = query.get();
+    Orders order = ordersRepository.getOrdersById(id);
+
+    if(validateOrder(order)) {
       order.setAddress(retrieveAddress(order.getAccountId(), order.getAddressId()));
       order.setOrderLineItemsList(retrieveOrderLine(order.getId()));
       order.calculateTotalPrice();
+      return order;
     }
-    return order;
+    return new Orders();
   }
 
   public List<Orders> retrieveAccountOrders(long accountId) {
@@ -60,8 +60,61 @@ public class OrderService {
     return orderNumberList;
   }
 
-  public void addOrder(Orders order) {
-    ordersRepository.save(order);
+  public Orders addOrder(Orders order) {
+   if(validateOrder(order)) {
+    return ordersRepository.save(order);
+   }
+   return new Orders();
+  }
+
+  public Orders updateOrder(long id, Orders updatedOrder) {
+    Orders originalOrder = retrieveOrder(id);
+    if(validateOrder(originalOrder)) {
+      Orders newOrder = update(originalOrder, updatedOrder);
+      ordersRepository.save(newOrder);
+      return newOrder;
+    }
+    return new Orders();
+  }
+
+  public boolean removeOrder(long id) {
+    Orders order = retrieveOrder(id);
+    if(validateOrder(order)) {
+      ordersRepository.deleteOrdersById(id);
+      return true;
+    }
+    return false;
+  }
+
+
+  protected boolean validateOrder(Orders order) {
+    if(order == null) return false;
+    if(order.getAccountId() == 0) return false;
+    if(order.getAddressId() == 0) return false;
+    if(order.getOrderDate() == null) return false;
+    if(order.getOrderNumber() == 0) return false;
+    return true;
+  }
+
+  private Orders update(Orders original, Orders updated) {
+    Orders newOrders = new Orders();
+    newOrders.setId(original.getId());
+
+    if(updated == null) return original;
+
+    if(updated.getAccountId() == 0) newOrders.setAccountId(original.getAccountId());
+    else newOrders.setAccountId(updated.getAccountId());
+
+    if(updated.getAddressId() == 0) newOrders.setAddressId(original.getAddressId());
+    else newOrders.setAddressId(updated.getAddressId());
+
+    if(updated.getOrderDate() == null) newOrders.setOrderDate(original.getOrderDate());
+    else newOrders.setOrderDate(updated.getOrderDate());
+
+    if(updated.getOrderNumber() == 0) newOrders.setOrderNumber(original.getOrderNumber());
+    else newOrders.setOrderNumber(updated.getOrderNumber());
+
+    return newOrders;
   }
 
   private Address retrieveAddress(long accountId, long addressId) { return addressService.retrieveAddress(accountId, addressId); }

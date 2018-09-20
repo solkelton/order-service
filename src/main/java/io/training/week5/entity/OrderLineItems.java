@@ -32,7 +32,7 @@ import javax.persistence.Transient;
     name="retrieveOrderLineDisplay",
     query="select q1.quantity, q2.name as productName "
         + "from order_line_items q1, product q2 "
-        + "where q1.shipment_id=1 and q1.product_id in (select q2.id from product where q1.product_id=q2.id)",
+        + "where q1.shipment_id=?1 and q1.product_id in (select q2.id from product where q1.product_id=q2.id)",
     resultSetMapping = "orderLineMapping"
 )
 public class OrderLineItems {

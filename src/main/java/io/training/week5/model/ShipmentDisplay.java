@@ -5,10 +5,10 @@ import java.util.List;
 
 public class ShipmentDisplay {
 
-//  private long orderNumber;
+  private long orderNumber;
   private LocalDateTime shippedDate;
   private LocalDateTime deliveryDate;
-//  private List<OrderLineDisplay> orderLineItems;
+  private List<OrderLineDisplay> orderLineItems;
 
 //  public ShipmentDisplay(long orderNumber, long accountId, long addressId,
 //      LocalDateTime shippedDate, LocalDateTime deliveryDate,
@@ -26,13 +26,13 @@ public class ShipmentDisplay {
 
   public ShipmentDisplay() {}
 
-//  public long getOrderNumber() {
-//    return orderNumber;
-//  }
-//
-//  public void setOrderNumber(long orderNumber) {
-//    this.orderNumber = orderNumber;
-//  }
+  public long getOrderNumber() {
+    return orderNumber;
+  }
+
+  public void setOrderNumber(long orderNumber) {
+    this.orderNumber = orderNumber;
+  }
 
   public LocalDateTime getShippedDate() {
     return shippedDate;
@@ -50,11 +50,11 @@ public class ShipmentDisplay {
     this.deliveryDate = deliveryDate;
   }
 
-//  public List<OrderLineDisplay> getOrderLineItems() {
-//    return orderLineItems;
-//  }
-//
-//  public void setOrderLineItems(List<OrderLineDisplay> orderLineItems) {
-//    this.orderLineItems = orderLineItems;
-//  }
+  public List<OrderLineDisplay> getOrderLineItems() {
+    return orderLineItems;
+  }
+
+  public void setOrderLineItems(List<OrderLineDisplay> orderLineItems) {
+    this.orderLineItems = orderLineItems;
+  }
 }

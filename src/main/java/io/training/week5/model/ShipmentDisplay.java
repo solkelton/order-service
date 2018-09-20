@@ -1,13 +1,16 @@
 package io.training.week5.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class ShipmentDisplay {
 
+  @JsonIgnore
   private long orderNumber;
   private LocalDateTime shippedDate;
   private LocalDateTime deliveryDate;
+  @JsonIgnore
   private List<OrderLineDisplay> orderLineItems;
 
 //  public ShipmentDisplay(long orderNumber, long accountId, long addressId,

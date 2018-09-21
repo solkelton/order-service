@@ -1,5 +1,9 @@
 package io.training.week5.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import io.training.week5.clients.AccountClient;
+import io.training.week5.clients.AddressClient;
+import io.training.week5.clients.ShipmentClient;
 import io.training.week5.model.Account;
 import io.training.week5.model.Address;
 import io.training.week5.entity.OrderLineItems;
@@ -9,45 +13,77 @@ import io.training.week5.repo.OrdersRepository;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {
 
-  private OrdersRepository ordersRepository;
-  @Autowired private AccountService accountService;
-  @Autowired private AddressService addressService;
-  @Autowired private OrderLineItemService orderLineItemService;
-  @Autowired private ShipmentService shipmentService;
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  public OrderService(OrdersRepository ordersRepository) {
+  private OrdersRepository ordersRepository;
+  private AccountClient accountClient;
+  private AddressClient addressClient;
+  private OrderLineItemService orderLineItemService;
+  private ShipmentClient shipmentClient;
+
+  public OrderService(OrdersRepository ordersRepository,
+      AccountClient accountClient, AddressClient addressClient,
+      OrderLineItemService orderLineItemService,
+      ShipmentClient shipmentClient) {
     this.ordersRepository = ordersRepository;
+    this.accountClient = accountClient;
+    this.addressClient = addressClient;
+    this.orderLineItemService = orderLineItemService;
+    this.shipmentClient = shipmentClient;
   }
 
   public Orders retrieveOrder(long id) {
     Orders order = ordersRepository.getOrdersById(id);
 
     if(validateOrder(order)) {
+      logger.info("Valid Order Found at retrieveOrder Function");
       order.setAddress(retrieveAddress(order.getAccountId(), order.getAddressId()));
       order.setOrderLineItemsList(retrieveOrderLine(order.getId()));
       order.calculateTotalPrice();
       return order;
     }
+    logger.debug("Invalid Order Id at retrieveOrder Function");
+    logger.debug("Order Id: {}", id);
     return new Orders();
   }
 
+  @HystrixCommand(fallbackMethod = "retrieveAccountOrdersFallBack")
   public List<Orders> retrieveAccountOrders(long accountId) {
     List<Orders> ordersList = ordersRepository.getOrdersByAccountIdOrderByOrderDate(accountId);
     if(ordersList.size() > 0) {
+      logger.info("Valid Orders List Found at retrieveAccountOrders");
       for(Orders order: ordersList) {
         order.setAddress(retrieveAddress(order.getAccountId(), order.getAddressId()));
         order.setOrderLineItemsList(retrieveOrderLine(order.getId()));
-//        order.setShipment(shipmentService.retrieveShipmentDates(orderLine.getShipmentId()));
         order.calculateTotalPrice();
       }
+      return ordersList;
     }
+    logger.debug("Invalid Order Id Or No Orders Associated with Account Id");
+    logger.debug("AccountId: {}", accountId);
+    return ordersList;
+  }
+
+  public List<Orders> retrieveAccountOrdersFallBack(long accountId) {
+    List<Orders> ordersList = ordersRepository.getOrdersByAccountIdOrderByOrderDate(accountId);
+    if(ordersList.size() > 0) {
+      logger.info("Valid Orders List Found at retrieveAccountOrdersFallBack");
+      for(Orders order : ordersList) {
+        order.setOrderLineItemsList(retrieveOrderLine(order.getId()));
+        order.calculateTotalPrice();
+      }
+      return ordersList;
+    }
+    logger.debug("Invalid Order Id Or No Orders Associated with Account Id");
+    logger.debug("AccountId: {}", accountId);
     return ordersList;
   }
 
@@ -62,30 +98,37 @@ public class OrderService {
 
   public Orders addOrder(Orders order) {
    if(validateOrder(order)) {
+     logger.info("Valid Order Added");
     return ordersRepository.save(order);
    }
+   logger.debug("Invalid Order Attempted to Add");
+   logger.debug("Order: {}", order.toString());
    return new Orders();
   }
 
   public Orders updateOrder(long id, Orders updatedOrder) {
     Orders originalOrder = retrieveOrder(id);
     if(validateOrder(originalOrder)) {
+      logger.info("Valid Order Updated");
       Orders newOrder = update(originalOrder, updatedOrder);
       ordersRepository.save(newOrder);
       return newOrder;
     }
+    logger.debug("Invalid Order Attempted to Update at Order Id {}",id);
+    logger.debug("Order: {}", updatedOrder.toString());
     return new Orders();
   }
 
   public boolean removeOrder(long id) {
     Orders order = retrieveOrder(id);
     if(validateOrder(order)) {
+      logger.info("Valid Order Removed");
       ordersRepository.deleteOrdersById(id);
       return true;
     }
+    logger.debug("Invalid Order Attempted to Remove at Order Id {}", id);
     return false;
   }
-
 
   protected boolean validateOrder(Orders order) {
     if(order == null) return false;
@@ -117,8 +160,9 @@ public class OrderService {
     return newOrders;
   }
 
-  private Address retrieveAddress(long accountId, long addressId) { return addressService.retrieveAddress(accountId, addressId); }
-  private Account retrieveAccount(long accountId) { return accountService.retrieveAccount(accountId); }
+  private Address retrieveAddress(long accountId, long addressId) { return addressClient
+      .retrieveAddress(accountId, addressId); }
+  private Account retrieveAccount(long accountId) { return accountClient.retrieveAccount(accountId); }
   private List<OrderLineItems> retrieveOrderLine(long orderId) { return orderLineItemService.retrieveOrderLineItems(orderId); }
 
 }

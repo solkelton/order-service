@@ -1,4 +1,4 @@
-package io.training.week5.service;
+package io.training.week5.clients;
 
 import io.training.week5.model.Shipment;
 import io.training.week5.model.ShipmentDisplay;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Component
 @FeignClient(name="shipment-service")
-public interface ShipmentService {
+public interface ShipmentClient {
 
   @RequestMapping(method= RequestMethod.GET, value="/{id}")
   public Shipment retrieveShipment(@PathVariable("id") long id);

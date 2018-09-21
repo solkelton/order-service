@@ -1,4 +1,4 @@
-package io.training.week5.service;
+package io.training.week5.clients;
 
 import io.training.week5.model.Product;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Component
 @FeignClient(name="product-service")
-public interface ProductService {
+public interface ProductClient {
 
   @RequestMapping(method= RequestMethod.GET, value="/{id}")
   public Product retrieveProduct(@PathVariable("id") long id);

@@ -171,4 +171,15 @@ public class OrderLineItems {
   public void setOrdersId(long ordersId) {
     this.ordersId = ordersId;
   }
+
+  @Override
+  public String toString() {
+    return "OrderLineItems{" +
+        "productId=" + productId +
+        ", quantity=" + quantity +
+        ", price=" + price +
+        ", totalPrice=" + totalPrice +
+        ", shipmentId=" + shipmentId +
+        '}';
+  }
 }

@@ -186,7 +186,7 @@ public class OrderLineItemService {
 
   private OrderLineItems setValues(OrderLineItems orderLineItems) {
     orderLineItems.setProduct(productClient.retrieveProduct(orderLineItems.getProductId()));
-    orderLineItems.setShipment(shipmentClient.retrieveShipmentDates(orderLineItems.getShipmentId()));
+//    orderLineItems.setShipment(shipmentClient.retrieveShipmentDates(orderLineItems.getShipmentId()));
     orderLineItems.calculateTotalPrice();
     return orderLineItems;
   }

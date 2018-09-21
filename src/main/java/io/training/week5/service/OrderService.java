@@ -9,6 +9,7 @@ import io.training.week5.model.Address;
 import io.training.week5.entity.OrderLineItems;
 import io.training.week5.entity.Orders;
 import io.training.week5.model.OrderNumber;
+import io.training.week5.model.ShipmentDisplay;
 import io.training.week5.repo.OrdersRepository;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class OrderService {
       logger.info("Valid Order Found at retrieveOrder Function");
       order.setAddress(retrieveAddress(order.getAccountId(), order.getAddressId()));
       order.setOrderLineItemsList(retrieveOrderLine(order.getId()));
+      order.setShipments(retrieveShipmentDisplayList(order.getOrderLineItemsList()));
       order.calculateTotalPrice();
       return order;
     }
@@ -160,9 +162,18 @@ public class OrderService {
     return newOrders;
   }
 
+  private List<ShipmentDisplay> retrieveShipmentDisplayList(List<OrderLineItems> orderLineItemsList) {
+    return new ArrayList<ShipmentDisplay>(){{
+      for(OrderLineItems orderLineItems : orderLineItemsList) {
+        add(retrieveShipment(orderLineItems.getShipmentId()));
+      }
+    }};
+  }
+
   private Address retrieveAddress(long accountId, long addressId) { return addressClient
       .retrieveAddress(accountId, addressId); }
   private Account retrieveAccount(long accountId) { return accountClient.retrieveAccount(accountId); }
   private List<OrderLineItems> retrieveOrderLine(long orderId) { return orderLineItemService.retrieveOrderLineItems(orderId); }
+  private ShipmentDisplay retrieveShipment(long shipmentId) {return shipmentClient.retrieveShipmentDates(shipmentId); }
 
 }

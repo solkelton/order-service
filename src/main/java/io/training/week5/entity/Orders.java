@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.training.week5.model.Address;
+import io.training.week5.model.Shipment;
+import io.training.week5.model.ShipmentDisplay;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -35,6 +37,8 @@ public class Orders {
   private double totalPrice;
   @Transient
   private Address address;
+  @Transient
+  private List<ShipmentDisplay> shipments;
 
   public Orders(LocalDateTime orderDate, long orderNumber, long accountId, long addressId) {
     this.orderDate = orderDate;
@@ -106,6 +110,14 @@ public class Orders {
 
   public void setAddress(Address address) {
     this.address = address;
+  }
+
+  public List<ShipmentDisplay> getShipments() {
+    return shipments;
+  }
+
+  public void setShipments(List<ShipmentDisplay> shipments) {
+    this.shipments = shipments;
   }
 
   public void calculateTotalPrice() {

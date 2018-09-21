@@ -40,17 +40,14 @@ public class OrderLineItems {
   @GeneratedValue
 //  @JsonIgnore
   private long id;
-//  @JoinColumn(name="productId")
 //  @JsonIgnore
   private long productId;
   private int quantity;
   private double price;
   @Transient
   private double totalPrice;
-//  @JoinColumn(name="shipmentId")
 //  @JsonIgnore
   private long shipmentId;
-//  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name="ordersId")
   private long ordersId;
 
@@ -62,6 +59,7 @@ public class OrderLineItems {
   private Product product;
 
   @Transient
+  @JsonIgnore
   private ShipmentDisplay shipment;
 
   public OrderLineItems(long productId, int quantity, double price, long shipmentId) {
